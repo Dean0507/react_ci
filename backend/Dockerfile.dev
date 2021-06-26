@@ -1,0 +1,12 @@
+FROM node:alpine
+
+WORKDIR /app
+
+COPY ./package.json ./
+
+RUN npm install
+
+COPY . .
+#변경사항을 즉각즉각 반영하기 위해 nodemon 사용
+CMD ["npm", "run", "dev"]
+

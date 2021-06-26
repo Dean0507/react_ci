@@ -1,0 +1,56 @@
+version: "3"
+services:
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./frontend
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    stdin_open: true
+    environment: 
+     - CHOKIDAR_USEPOLLING=true
+#restart 정책 - >no: 어떤상황에도 재시작 x , always - 꺼지면 항상 재시작, on-failure 에러코드와 함께 컨테이너가 멈추었을때만 재시작, restart:unless-stopped: 개발자가 멈추려고 할때 빼고는 항상 재시작
+  nginx: 
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports: 
+      - "3000:80"
+#포트맵핑, 로컬에 3천번을 컨테이너안의 엔진엑스 80번에 맵핑
+  backend:
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./backend
+    container_name: app_backend
+    volumes:
+      - /app/node_modules
+      - ./backend:/app
+    environment: 
+      MYSQL_HOST: mysql
+      MYSQL_USER: root 
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: myapp
+      MYSQL_PORT: 3306 
+    environment: 
+     - CHOKIDAR_USEPOLLING=true
+
+
+
+  # # Mysql을 로컬에서 구성할때 사용
+  # mysql:
+  #   #도커파일이 어디에 있는지 설정
+  #   build: ./mysql
+  #   restart: unless-stopped
+  #   container_name: app_mysql
+  #   ports:
+  #     - "3308:3306"
+  #   # DB에 저장된 자료를 컨테이너를 지우더라도 자료가 지워지지 않게 해주기 위한 볼륨 
+  #   # 로컬로 복사 : 컨테이너 에 있는것을  도커 호스트 파일시스템위치:/var/lib/docker/volumes/
+  #   volumes:
+  #     - ./mysql/mysql_data:/var/lib/mysql
+  #     - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: password
+  #     MYSQL_DATABASE: myapp
