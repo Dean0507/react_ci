@@ -27,7 +27,9 @@ services:
     volumes:
       - /app/node_modules
       - ./backend:/app
+    #환경변수를 설정해주어서 다른데서 그냥 가져올수있게 like dotenv 
     environment: 
+      # 엘라스틱 빈스톡에는 host값을 RDS의 endpoint를 EBS의 config -> software -> env prop에 저장
       MYSQL_HOST: mysql
       MYSQL_USER: root 
       MYSQL_ROOT_PASSWORD: password
